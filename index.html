@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Will you be my Valentine? 💘</title>
+  <style>
+    :root{
+      --bg1:#fff1f6; --bg2:#ffe4ef; --card:#ffffffcc; --text:#2b2b2b;
+      --yes:#ff3b7a; --yes2:#ff6a9a;
+      --shadow: 0 20px 60px rgba(0,0,0,.12);
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0; min-height:100vh; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(800px 500px at 20% 10%, #fff 0%, var(--bg1) 40%, transparent 70%),
+        radial-gradient(900px 600px at 80% 20%, #fff 0%, var(--bg2) 45%, transparent 70%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+    }
+    .wrap{ min-height:100vh; display:grid; place-items:center; padding: 28px 16px; }
+    .card{
+      width:min(720px, 100%);
+      background:var(--card);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.7);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 4vw, 34px);
+      position:relative;
+      overflow:hidden;
+      z-index: 2;
+    }
+    .badge{
+      display:inline-flex; gap:10px; align-items:center;
+      padding:10px 14px; border-radius:999px;
+      background: rgba(255, 255, 255, .8);
+      border: 1px solid rgba(255, 59, 122, .25);
+      font-weight:600; font-size:14px;
+    }
+    h1{ margin: 18px 0 10px; font-size: clamp(28px, 4.5vw, 44px); line-height:1.05; }
+    p{ margin: 0 0 18px; font-size: clamp(15px, 2.4vw, 18px); line-height:1.55; opacity:.9; }
+    .names{ display:flex; gap:10px; flex-wrap:wrap; margin: 10px 0 18px; font-weight:700; }
+    .pill{ padding:10px 14px; border-radius:999px; background: rgba(255,255,255,.9); border:1px solid rgba(0,0,0,.06); cursor:pointer; }
+    .stage{
+      position:relative; margin-top:18px; padding:18px;
+      border-radius:20px; background: rgba(255,255,255,.7);
+      border: 1px solid rgba(0,0,0,.05);
+      min-height:180px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .buttons{
+      display:flex; gap:14px; justify-content:center; flex-wrap:wrap;
+      position:absolute; bottom:18px; left:18px; right:18px;
+    }
+    button{
+      border:0; font-weight:800; border-radius:999px; padding: 14px 18px;
+      cursor:pointer; user-select:none; touch-action:manipulation;
+      transition: transform .12s ease, filter .12s ease;
+      will-change: transform;
+    }
+    button:active{ transform: scale(.98); }
+
+    .yes{
+      background: linear-gradient(135deg, var(--yes), var(--yes2));
+      color:white; box-shadow: 0 16px 30px rgba(255,59,122,.25);
+      transform-origin: center;
+    }
+    .yes:hover{ filter:brightness(1.03); transform: translateY(-1px); }
+
+    .no{
+      background: rgba(43,43,43,.08);
+      color:#2b2b2b;
+      border:1px solid rgba(43,43,43,.12);
+      box-shadow: 0 10px 22px rgba(0,0,0,.08);
+      position:relative;
+    }
+
+    .msg{ text-align:center; padding:10px 8px; }
+    .big{ font-size: clamp(26px, 4vw, 42px); font-weight: 900; margin-bottom: 6px; }
+    .small{ opacity:.9; font-size: clamp(14px, 2.4vw, 18px); }
+
+    /* Fullscreen fireworks canvas + overlay */
+    #fxCanvas{
+      position:fixed; inset:0;
+      width:100vw; height:100vh;
+      z-index: 999; display:none;
+    }
+    #fxOverlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.25);
+      z-index: 998; display:none;
+      backdrop-filter: blur(2px);
+    }
+    #fxText{
+      position:fixed;
+      inset:0;
+      display:none;
+      z-index:1000;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding: 20px;
+      color:white;
+      font-weight:900;
+      font-size: clamp(26px, 5vw, 52px);
+      text-shadow: 0 12px 40px rgba(0,0,0,.45);
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      #fxCanvas{ display:none !important; }
+      button{ transition:none !important; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fxCanvas"></canvas>
+  <div id="fxOverlay"></div>
+  <div id="fxText">YAYYY!! 💞<br/>Let’s go to our memories…</div>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="badge">To My One and Only Baby Girl</div>
+      <h1>Will you be my Valentine?</h1>
+      <p>
+      Dear Chit ma wa ly a yan a yan chit ya taw kg ma ly Can i ask you an important question?
+      Will you be my valatine baby?
+      </p>
+
+      <div class="names">
+        <span class="pill" id="fromPill">From: <span id="fromName">Paing</span></span>
+        <span class="pill" id="toPill">To: <span id="toName">Mone</span></span>
+      </div>
+
+      <div class="stage" id="stage">
+        <div class="msg" id="message">
+          <div class="big">Pleaseee</div>
+         
+        </div>
+
+        <div class="buttons">
+          <button class="yes" id="yesBtn">Yes 💖</button>
+          <button class="no" id="noBtn">No 😭</button>
+        </div>
+      </div>
+
+        
+     </section>
+  </main>
+
+  <script>
+    // ===== Edit names quickly =====
+    const fromName = document.getElementById("fromName");
+    const toName = document.getElementById("toName");
+
+    document.getElementById("fromPill").addEventListener("click", () => {
+      const v = prompt("Your name (From):", fromName.textContent);
+      if (v && v.trim()) fromName.textContent = v.trim();
+    });
+    document.getElementById("toPill").addEventListener("click", () => {
+      const v = prompt("Her name (To):", toName.textContent);
+      if (v && v.trim()) toName.textContent = v.trim();
+    });
+
+    // ===== Elements =====
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const stage = document.getElementById("stage");
+    const msg = document.getElementById("message");
+
+    // ===== Helpers =====
+    function rand(min, max){ return Math.random() * (max - min) + min; }
+
+   // ===== Move NO button randomly =====
+function moveNoButton(){
+  const rect = stage.getBoundingClientRect();
+  const btnRect = noBtn.getBoundingClientRect();
+  const pad = 16;
+
+  const maxX = rect.width - btnRect.width - pad;
+  const maxY = rect.height - btnRect.height - pad;
+
+  const x = rand(pad, Math.max(pad, maxX));
+  const y = rand(pad, Math.max(pad, maxY));
+
+  noBtn.style.position = "absolute";
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+}
+
+noBtn.addEventListener("mouseenter", moveNoButton);
+noBtn.addEventListener("touchstart", (e)=>{
+  e.preventDefault();
+  moveNoButton();
+}, {passive:false});
+
+
+// ===== When "No" is clicked -> YES grows properly (no overlapping) =====
+let noCount = 0;
+
+// Store original sizes
+const basePaddingY = 14;
+const basePaddingX = 18;
+const baseFontSize = parseFloat(getComputedStyle(yesBtn).fontSize) || 16;
+
+noBtn.addEventListener("click", () => {
+  noCount++;
+
+  // Grow button using padding + font size (NOT transform scale)
+  const grow = Math.min(18, noCount * 3);
+
+  yesBtn.style.padding =
+    `${basePaddingY + grow}px ${basePaddingX + grow * 2}px`;
+
+  yesBtn.style.fontSize =
+    `${Math.min(baseFontSize + noCount * 2, baseFontSize + 14)}px`;
+
+  // Small bounce effect
+  yesBtn.animate(
+    [{ transform: "scale(1.03)" }, { transform: "scale(1)" }],
+    { duration: 160, easing: "ease-out" }
+  );
+
+  // Cute changing messages
+  const lines = [
+    "Hmm… 🤔",
+    "Are you sure? 😼",
+    "The YES is getting bigger 😌",
+    "Okay stop playing 😭",
+    "YES is the only option now 💍"
+  ];
+
+  const line = lines[Math.min(lines.length - 1, noCount - 1)];
+
+  msg.innerHTML = `
+    <div class="big">${line}</div>
+    <div class="small">Try again 😌</div>
+  `;
+
+  moveNoButton();
+});
+
+
+    // ===== Fireworks (canvas) =====
+    const canvas = document.getElementById("fxCanvas");
+    const overlay = document.getElementById("fxOverlay");
+    const fxText = document.getElementById("fxText");
+    const ctx = canvas.getContext("2d");
+
+    let running = false;
+    const particles = [];
+    const rockets = [];
+
+    function resize(){
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = window.innerWidth + "px";
+      canvas.style.height = window.innerHeight + "px";
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    window.addEventListener("resize", resize);
+
+    function spawnRocket(){
+      rockets.push({
+        x: rand(0.15*window.innerWidth, 0.85*window.innerWidth),
+        y: window.innerHeight + 10,
+        vx: rand(-1.0, 1.0),
+        vy: rand(-12, -16),
+        ttl: rand(30, 55),
+        hue: rand(0, 360)
+      });
+    }
+
+    function explode(x, y, hue){
+      const count = Math.floor(rand(60, 110));
+      for (let i=0;i<count;i++){
+        const a = rand(0, Math.PI*2);
+        const sp = rand(2, 7);
+        particles.push({
+          x, y,
+          vx: Math.cos(a)*sp,
+          vy: Math.sin(a)*sp,
+          life: rand(50, 90),
+          age: 0,
+          hue: (hue + rand(-30, 30)) % 360,
+          size: rand(1, 3)
+        });
+      }
+    }
+
+    function step(){
+      if (!running) return;
+
+      // trails
+      ctx.fillStyle = "rgba(0,0,0,0.18)";
+      ctx.fillRect(0,0,window.innerWidth, window.innerHeight);
+
+      // rockets
+      for (let i=rockets.length-1;i>=0;i--){
+        const r = rockets[i];
+        r.x += r.vx;
+        r.y += r.vy;
+        r.vy += 0.18;
+        r.ttl -= 1;
+
+        ctx.beginPath();
+        ctx.fillStyle = `hsl(${r.hue}, 100%, 65%)`;
+        ctx.arc(r.x, r.y, 2.2, 0, Math.PI*2);
+        ctx.fill();
+
+        if (r.ttl <= 0 || r.vy >= -2){
+          explode(r.x, r.y, r.hue);
+          rockets.splice(i, 1);
+        }
+      }
+
+      // particles
+      for (let i=particles.length-1;i>=0;i--){
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.08;
+        p.vx *= 0.985;
+        p.vy *= 0.985;
+        p.age += 1;
+
+        const alpha = Math.max(0, 1 - (p.age / p.life));
+        ctx.beginPath();
+        ctx.fillStyle = `hsla(${p.hue}, 100%, 65%, ${alpha})`;
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+        ctx.fill();
+
+        if (p.age >= p.life) particles.splice(i, 1);
+      }
+
+      if (Math.random() < 0.25) spawnRocket();
+      requestAnimationFrame(step);
+    }
+
+    function startFireworks(){
+      resize();
+      running = true;
+      canvas.style.display = "block";
+      overlay.style.display = "block";
+      fxText.style.display = "flex";
+
+      // start black
+      ctx.fillStyle = "rgba(0,0,0,1)";
+      ctx.fillRect(0,0,window.innerWidth, window.innerHeight);
+
+      for (let i=0;i<6;i++) spawnRocket();
+      step();
+    }
+
+    function stopFireworks(){
+      running = false;
+      canvas.style.display = "none";
+      overlay.style.display = "none";
+      fxText.style.display = "none";
+      rockets.length = 0;
+      particles.length = 0;
+    }
+
+    // ===== YES click -> fireworks -> redirect =====
+    yesBtn.addEventListener("click", () => {
+      msg.innerHTML = `
+        <div class="big">YAYYY!! 💞</div>
+        <div class="small">Okay okay… one second 😌</div>
+      `;
+      noBtn.style.display = "none";
+      yesBtn.disabled = true;
+      yesBtn.textContent = "Accepted 💍";
+
+      startFireworks();
+
+      setTimeout(() => {
+        stopFireworks();
+        window.location.href = "memo.html";
+      }, 2600);
+    });
+  </script>
+</body>
+</html>
